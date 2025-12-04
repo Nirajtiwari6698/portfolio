@@ -6,110 +6,112 @@ import { typography, colors, transitions } from '../constants/styles';
 export default function ProjectCard({ project, darkMode, index }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
-      viewport={{ once: true }}
-      whileHover={{ y: -15, scale: 1.02 }}
-      className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-        darkMode
-          ? 'bg-slate-700/50 text-blue-400 hover:bg-slate-600/50'
-          : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-      } ${transitions.default} ${transitions.hover}`}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      viewport={{ once: true, margin: "-50px" }}
+      className={`group relative overflow-hidden rounded-xl transition-all duration-300 ${
+        darkMode 
+          ? 'bg-slate-800/50 hover:bg-slate-800/70 border border-slate-700/50 hover:border-slate-600/70' 
+          : 'bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200'
+      } shadow-sm hover:shadow-md`}
     >
       {/* Image Container */}
-      <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
+      <div className="relative h-48 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-600/20 z-10" />
         <motion.img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 scale-100 group-hover:scale-110"
-          initial={{ scale: 1.1 }}
-          whileInView={{ scale: 1 }}
-          transition={{ duration: 0.6 }}
+          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+          initial={{ opacity: 0.9 }}
+          whileInView={{ opacity: 1 }}
         />
-        
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         {/* Featured Badge */}
         {project.featured && (
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            whileInView={{ scale: 1, rotate: 0 }}
-            transition={{ delay: index * 0.12 + 0.2, type: "spring" }}
-            className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center space-x-1 shadow-lg"
+            initial={{ y: -10, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ delay: index * 0.1 + 0.2 }}
+            className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1 rounded-full text-[11px] font-medium flex items-center space-x-1.5 shadow-lg backdrop-blur-sm bg-opacity-90"
           >
-            <Sparkles size={14} className="inline-block" />
-            <span className="inline-block">Featured</span>
+            <Sparkles size={12} className="inline-block" />
+            <span className="inline-block tracking-wide">FEATURED</span>
           </motion.div>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-7">
-        <motion.h3
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: index * 0.12 + 0.1 }}
-          className={`${typography.h3} ${colors.text.primary} mb-3`}
-        >
-          {project.title}
-        </motion.h3>
-        
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: index * 0.12 + 0.15 }}
-          className={`${typography.body1} ${colors.text.secondary} mb-4 line-clamp-3`}
-        >
-          {project.description}
-        </motion.p>
+      <div className="p-6">
+        <div className="flex flex-col h-full">
+          <div className="flex-1">
+            <h3 className={`text-xl font-bold mb-2 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
+              {project.title}
+            </h3>
+            
+            <p className={`text-sm mb-4 ${
+              darkMode ? 'text-gray-300' : 'text-gray-600'
+            } line-clamp-3 leading-relaxed`}>
+              {project.description}
+            </p>
+          </div>
 
-        {/* Technologies */}
-        <div className="flex flex-wrap gap-3 mt-6">
-          {project.technologies.map((tech, i) => (
-            <span
-              key={i}
-              className={`${typography.caption} px-3 py-1 rounded-full ${
-                darkMode
-                  ? 'bg-slate-700/50 text-blue-300'
-                  : 'bg-blue-50 text-blue-700'
-              }`}
+          {/* Technologies */}
+          <div className="flex flex-wrap gap-2 mt-4 mb-5">
+            {project.technologies.slice(0, 4).map((tech, i) => (
+              <span
+                key={i}
+                className={`text-xs px-2.5 py-1 rounded-full ${
+                  darkMode
+                    ? 'bg-slate-700/60 text-blue-300/90'
+                    : 'bg-blue-50 text-blue-700'
+                } font-medium`}
+              >
+                {tech}
+              </span>
+            ))}
+            {project.technologies.length > 4 && (
+              <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400">
+                +{project.technologies.length - 4}
+              </span>
+            )}
+          </div>
+
+          {/* Links */}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700/50">
+            <motion.a
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ x: 2 }}
+              className="text-sm font-medium flex items-center space-x-1.5 group/link"
             >
-              {tech}
-            </span>
-          ))}
-        </div>
-
-        {/* Links */}
-        <div className="flex gap-3">
-          <motion.a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.08, x: 5 }}
-            whileTap={{ scale: 0.92 }}
-            className="flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/50"
-          >
-            <span>Live Demo</span>
-            <motion.div whileHover={{ x: 3 }}>
-              <ExternalLink size={16} />
-            </motion.div>
-          </motion.a>
-          
-          <motion.a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.08, x: -5 }}
-            whileTap={{ scale: 0.92 }}
-            className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg font-semibold transition-all duration-300 ${darkMode ? 'bg-slate-700 text-gray-200 hover:bg-slate-600 hover:shadow-lg hover:shadow-slate-600/50' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-lg hover:shadow-gray-300/50'}`}
-          >
-            <span>Code</span>
-            <motion.div whileHover={{ x: -3 }}>
-              <Github size={16} />
-            </motion.div>
-          </motion.a>
+              <span className={darkMode ? 'text-blue-400 group-hover/link:text-blue-300' : 'text-blue-600 group-hover/link:text-blue-700'}>
+                View Project
+              </span>
+              <ExternalLink 
+                size={14} 
+                className={darkMode ? 'text-blue-400 group-hover/link:text-blue-300' : 'text-blue-500 group-hover/link:text-blue-600'} 
+              />
+            </motion.a>
+            
+            <motion.a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -1 }}
+              className={`p-2 rounded-lg ${
+                darkMode
+                  ? 'text-gray-400 hover:bg-slate-700/50 hover:text-white'
+                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+              } transition-colors`}
+              aria-label="View code on GitHub"
+            >
+              <Github size={18} />
+            </motion.a>
+          </div>
         </div>
       </div>
     </motion.div>
