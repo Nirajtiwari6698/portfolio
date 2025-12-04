@@ -1,58 +1,90 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, X, Moon, Sun } from 'lucide-react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Menu, X, Moon, Sun } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { typography, colors, transitions } from '../constants/styles';
 
 export default function Navbar({ darkMode, setDarkMode }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
+    { name: 'Home', path: '/', exact: true },
     { name: 'About', path: '/about' },
     { name: 'Projects', path: '/projects' },
     { name: 'Experience', path: '/experience' },
+    { name: 'Resume', path: '/resume' },
     { name: 'Contact', path: '/contact' }
-  ]
+  ];
+  
+  const location = useLocation();
 
-  const toggleMenu = () => setIsOpen(!isOpen)
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${darkMode ? 'bg-slate-900 bg-opacity-90 border-slate-700' : 'bg-white bg-opacity-90 border-gray-200'} backdrop-blur-xl border-b`}>
+    <nav className={`fixed w-full top-0 z-50 ${transitions.default} ${
+      darkMode 
+        ? 'bg-slate-900/90 border-slate-700' 
+        : 'bg-white/90 border-gray-200'
+    } backdrop-blur-xl border-b`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <NavLink to="/" className="flex items-center space-x-2">
             <motion.div
               whileHover={{ scale: 1.1 }}
-              className={`text-2xl font-bold gradient-text`}
+              className={`${typography.h2} gradient-text`}
+              aria-label="Home"
             >
               NT
             </motion.div>
-          </Link>
+          </NavLink>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`px-3 py-2 rounded-lg transition-smooth hover:${darkMode ? 'bg-slate-800' : 'bg-gray-100'} ${darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'}`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = link.exact 
+                ? location.pathname === link.path
+                : location.pathname.startsWith(link.path) && link.path !== '/';
+                
+              return (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  end={link.exact}
+                  className={({ isActive }) => 
+                    `px-3 py-2 rounded-lg ${transitions.default} ${
+                      isActive 
+                        ? darkMode 
+                          ? 'bg-blue-900/30 text-blue-400' 
+                          : 'bg-blue-100 text-blue-700'
+                        : `${
+                            darkMode 
+                              ? 'text-gray-300 hover:bg-slate-800 hover:text-white' 
+                              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          } ${transitions.hover} ${transitions.active}`
+                    }`
+                  }
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {link.name}
+                </NavLink>
+              );
+            })}
           </div>
 
           {/* Theme Toggle & Mobile Menu */}
           <div className="flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`p-2 rounded-lg transition-smooth ${darkMode ? 'bg-slate-800 text-yellow-400' : 'bg-gray-100 text-gray-700'}`}
+              className={`p-2 rounded-full ${transitions.default} ${
+                darkMode 
+                  ? 'text-yellow-300 hover:bg-slate-800' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              } ${transitions.hover} ${transitions.active}`}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </motion.button>
+            </button>
 
             {/* Mobile Menu Button */}
             <button
@@ -66,25 +98,40 @@ export default function Navbar({ darkMode, setDarkMode }) {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className={`md:hidden pb-4 space-y-2 ${darkMode ? 'bg-slate-800' : 'bg-gray-50'}`}
-          >
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-lg transition-smooth ${darkMode ? 'text-gray-300 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-200'}`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </motion.div>
+          <div className={`md:hidden fixed inset-0 bg-black/50 z-40 transition-opacity ${
+            isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`} onClick={() => setIsOpen(false)}>
+            <div className={`absolute right-0 top-0 h-full w-64 transform transition-transform ${
+              isOpen ? 'translate-x-0' : 'translate-x-full'
+            } ${darkMode ? 'bg-slate-900' : 'bg-white'} shadow-xl`} onClick={e => e.stopPropagation()}>
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  end={link.exact}
+                  onClick={() => setIsOpen(false)}
+                  className={({ isActive }) => 
+                    `px-3 py-2 rounded-lg ${transitions.default} ${
+                      isActive 
+                        ? darkMode 
+                          ? 'bg-blue-900/30 text-blue-400' 
+                          : 'bg-blue-100 text-blue-700'
+                        : `${
+                            darkMode 
+                              ? 'text-gray-300 hover:bg-slate-800 hover:text-white' 
+                              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          } ${transitions.hover} ${transitions.active}`
+                    }`
+                  }
+                  aria-current={location.pathname === link.path ? 'page' : undefined}
+                >
+                  {link.name}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </nav>
-  )
+  );
 }

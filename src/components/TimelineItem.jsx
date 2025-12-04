@@ -1,6 +1,7 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Briefcase, MapPin, Calendar } from 'lucide-react'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Briefcase, MapPin, Calendar, ExternalLink } from 'lucide-react';
+import { typography, colors, transitions } from '../constants/styles';
 
 export default function TimelineItem({ item, darkMode, isLeft }) {
   return (
@@ -14,35 +15,53 @@ export default function TimelineItem({ item, darkMode, isLeft }) {
       <div className="flex flex-col items-center">
         <motion.div
           whileHover={{ scale: 1.2 }}
-          className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mt-2"
+          className={`w-4 h-4 rounded-full mt-2 bg-gradient-to-r from-blue-500 to-purple-600 ${transitions.default}`}
         />
+        <p className={`${typography.body2} ${colors.text.secondary} mb-4`}>
+          {item.description}
+        </p>
         <div className={`w-1 flex-1 ${darkMode ? 'bg-slate-700' : 'bg-gray-300'}`} />
       </div>
 
       {/* Content */}
       <motion.div
         whileHover={{ y: -5 }}
-        className={`glass rounded-lg p-6 flex-1 ${darkMode ? 'bg-slate-800 bg-opacity-50' : 'bg-white bg-opacity-50'}`}
+        className={`glass rounded-lg p-6 flex-1 ${transitions.default} ${
+          darkMode ? 'bg-slate-800/50 hover:bg-slate-800/70' : 'bg-white/50 hover:bg-white/70'
+        }`}
       >
         <div className="flex items-start justify-between mb-2">
-          <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          <h3 className={`${typography.h4} ${colors.text.primary}`}>
             {item.position}
           </h3>
-          <span className={`text-xs px-3 py-1 rounded-full ${darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>
+          <span className={`${typography.caption} px-3 py-1 rounded-full ${
+            darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'
+          }`}>
             {item.duration}
           </span>
         </div>
 
-        <div className="flex items-center space-x-4 mb-3">
-          <div className="flex items-center space-x-2 text-sm">
-            <Briefcase size={16} className="text-blue-500" />
-            <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+        <div className="flex flex-wrap items-center gap-4 mb-3">
+          <div className="flex items-center space-x-2">
+            <Briefcase size={16} className={colors.text.accent} />
+            <span className={`${typography.body2} ${colors.text.secondary}`}>
               {item.company}
             </span>
           </div>
-          <div className="flex items-center space-x-2 text-sm">
+          {item.website && (
+            <a 
+              href={item.website} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center space-x-1 text-blue-500 hover:underline"
+            >
+              <ExternalLink size={14} />
+              <span className="text-sm">Website</span>
+            </a>
+          )}
+          <div className="flex items-center space-x-2">
             <MapPin size={16} className="text-purple-500" />
-            <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+            <span className={`${typography.body2} ${colors.text.secondary}`}>
               {item.location}
             </span>
           </div>
@@ -60,10 +79,14 @@ export default function TimelineItem({ item, darkMode, isLeft }) {
 
         {/* Technologies */}
         <div className="flex flex-wrap gap-2">
-          {item.technologies.map((tech) => (
+          {item.technologies.map((tech, index) => (
             <span
-              key={tech}
-              className={`text-xs px-2 py-1 rounded ${darkMode ? 'bg-slate-700 text-blue-300' : 'bg-blue-100 text-blue-700'}`}
+              key={index}
+              className={`${typography.caption} px-2 py-1 rounded ${
+                darkMode
+                  ? 'bg-slate-700/50 text-blue-300'
+                  : 'bg-blue-50 text-blue-700'
+              }`}
             >
               {tech}
             </span>

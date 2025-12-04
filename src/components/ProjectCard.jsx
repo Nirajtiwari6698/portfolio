@@ -1,6 +1,7 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { ExternalLink, Github, Sparkles } from 'lucide-react'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ExternalLink, Github, Sparkles } from 'lucide-react';
+import { typography, colors, transitions } from '../constants/styles';
 
 export default function ProjectCard({ project, darkMode, index }) {
   return (
@@ -10,7 +11,11 @@ export default function ProjectCard({ project, darkMode, index }) {
       transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
       viewport={{ once: true }}
       whileHover={{ y: -15, scale: 1.02 }}
-      className={`group glass rounded-2xl overflow-hidden transition-all duration-500 ${darkMode ? 'bg-slate-800 bg-opacity-40 hover:bg-opacity-60 border border-slate-700 hover:border-blue-500' : 'bg-white bg-opacity-40 hover:bg-opacity-70 border border-white hover:border-blue-300'}`}
+      className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+        darkMode
+          ? 'bg-slate-700/50 text-blue-400 hover:bg-slate-600/50'
+          : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+      } ${transitions.default} ${transitions.hover}`}
     >
       {/* Image Container */}
       <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
@@ -34,8 +39,8 @@ export default function ProjectCard({ project, darkMode, index }) {
             transition={{ delay: index * 0.12 + 0.2, type: "spring" }}
             className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center space-x-1 shadow-lg"
           >
-            <Sparkles size={14} />
-            <span>Featured</span>
+            <Sparkles size={14} className="inline-block" />
+            <span className="inline-block">Featured</span>
           </motion.div>
         )}
       </div>
@@ -46,7 +51,7 @@ export default function ProjectCard({ project, darkMode, index }) {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: index * 0.12 + 0.1 }}
-          className={`text-2xl font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}
+          className={`${typography.h3} ${colors.text.primary} mb-3`}
         >
           {project.title}
         </motion.h3>
@@ -55,24 +60,24 @@ export default function ProjectCard({ project, darkMode, index }) {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: index * 0.12 + 0.15 }}
-          className={`text-sm mb-5 leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+          className={`${typography.body1} ${colors.text.secondary} mb-4 line-clamp-3`}
         >
           {project.description}
         </motion.p>
 
         {/* Technologies */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {project.technologies.map((tech, idx) => (
-            <motion.span
-              key={tech}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.12 + (idx * 0.05) }}
-              whileHover={{ scale: 1.1 }}
-              className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-300 ${darkMode ? 'bg-gradient-to-r from-blue-900 to-purple-900 text-blue-200 hover:from-blue-800 hover:to-purple-800' : 'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 hover:from-blue-200 hover:to-purple-200'}`}
+        <div className="flex flex-wrap gap-3 mt-6">
+          {project.technologies.map((tech, i) => (
+            <span
+              key={i}
+              className={`${typography.caption} px-3 py-1 rounded-full ${
+                darkMode
+                  ? 'bg-slate-700/50 text-blue-300'
+                  : 'bg-blue-50 text-blue-700'
+              }`}
             >
               {tech}
-            </motion.span>
+            </span>
           ))}
         </div>
 
