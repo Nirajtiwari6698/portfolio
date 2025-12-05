@@ -12,6 +12,8 @@ export default function Contact({ darkMode }) {
   })
 
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -21,15 +23,36 @@ export default function Contact({ darkMode }) {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Simulate form submission
-    console.log('Form submitted:', formData)
-    setSubmitted(true)
-    setTimeout(() => {
-      setSubmitted(false)
-      setFormData({ name: '', email: '', subject: '', message: '' })
-    }, 3000)
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSubmitted(true)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+        setTimeout(() => {
+          setSubmitted(false)
+        }, 5000)
+      } else {
+        setError(data.message || 'Failed to send message')
+      }
+    } catch (err) {
+      setError('Failed to send message. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const contactMethods = [
@@ -228,13 +251,31 @@ export default function Contact({ darkMode }) {
                 {/* Submit Button */}
                 <motion.button
                   type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold flex items-center justify-center space-x-2 transition-smooth hover:shadow-lg"
+                  whileHover={{ scale: loading ? 1 : 1.02 }}
+                  whileTap={{ scale: loading ? 1 : 0.98 }}
+                  disabled={loading}
+                  className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold flex items-center justify-center space-x-2 transition-smooth hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span>Send Message</span>
-                  <Send size={20} />
+                  {loading ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <span>Send Message</span>
+                      <Send size={20} />
+                    </>
+                  )}
                 </motion.button>
+
+                {/* Error Message */}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 rounded-lg bg-red-100 text-red-700 text-center font-semibold"
+                  >
+                    {error}
+                  </motion.div>
+                )}
 
                 {/* Success Message */}
                 {submitted && (
